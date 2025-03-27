@@ -27,6 +27,7 @@ board = [
     [' ', ' ', ' ']
 ]
 
+
 def get_move(player: str) -> int:
     """Prompt player for move input and validate it.
     Ask for new input if invalid value is passed.
@@ -48,6 +49,8 @@ def get_move(player: str) -> int:
                 return int(move)
         else:
             print("Invalid input. Please enter a number from 1 to 9. Press q to quit the game.")
+
+
 
 def draw_board(board: list) -> None:
     """Prints the current board state.
@@ -80,7 +83,7 @@ def check_player_win(board: list, player: str) -> bool:
     diagonal_asc = [board[2][0],board[1][1],board[0][2]]
 
 def update_board(board: list, player: str, move: int) -> list:
-    """Update board based on the player's move.
+    """Update board based on the player's move. Returns None if field is not available.
     
     Args:
         board (list): 2D list of 3x3 tic-tac-toe board field values
@@ -88,18 +91,25 @@ def update_board(board: list, player: str, move: int) -> list:
         move (int): Numeric representation of the field to update (1-9)
     Returns:
         list: 2D list of 3x3 tic-tac-toe board field values"""
+    if board[(move - 1) // 3][(move - 1) % 3] == " ":
+        board[(move - 1) // 3][(move - 1) % 3] = player
+        return board
+    else:
+        print("The field is already taken")
     
-    board[(move - 1) // 3][(move - 1) % 3] = player
-    return board
-
 
 winner = None
 
 draw_board(board)
 while winner is None:
     for player in VALID_PLAYERS:
-        move = get_move(player)
-        update_board(board,player,move)
+        while True:
+            move = get_move(player)
+            if update_board(board,player,move) is None:
+                continue
+            else:
+                break
+
         draw_board(board)
         # if check_player_win(board,player):
-        #     winner = player
+        #     print(f"Congratulations, the player {player} WON!")
