@@ -27,6 +27,7 @@ board = [
     [' ', ' ', ' ']
 ]
 
+max_turns = board[0].count(' ') ** 2
 
 def get_move(player: str) -> int:
     """Prompt player for move input and validate it.
@@ -68,20 +69,22 @@ def check_player_win(board: list, player: str) -> bool:
     Args:
         board (list): 2D list of 3x3 tic-tac-toe board field values
         player (str): Symbol of the player to evalute"""
-    
+
     # count vertical
     for row in board:
-        win = list.count(row,player) == 3
-
-    #count horizontal
-    for index in board[0]:
-        column = [row[index] for row in board]
-        win = list.count(column,player) == 3
-
+        if list.count(row,player) == 3:
+            return True
+    #count vertical
+    for index in range(0,3):
+        column = [board[0][index],board[1][index],board[2][index]]
+        if list.count(column,player) == 3:
+            return True
     #count diagonals
     diagonal_desc = [board[0][0],board[1][1],board[2][2]]
     diagonal_asc = [board[2][0],board[1][1],board[0][2]]
-
+    if list.count(diagonal_asc,player) == 3 or list.count(diagonal_desc,player) == 3:
+        return True
+    
 def update_board(board: list, player: str, move: int) -> list:
     """Update board based on the player's move. Returns None if field is not available.
     
@@ -99,11 +102,14 @@ def update_board(board: list, player: str, move: int) -> list:
     
 
 winner = None
+turn_counter = 0
 
 draw_board(board)
-while winner is None:
+while True:
     for player in VALID_PLAYERS:
-        while True:
+        turn_counter += 1
+        while turn_counter <= max_turns:
+            print(f"turn number {turn_counter}")
             move = get_move(player)
             if update_board(board,player,move) is None:
                 continue
@@ -111,5 +117,9 @@ while winner is None:
                 break
 
         draw_board(board)
-        # if check_player_win(board,player):
-        #     print(f"Congratulations, the player {player} WON!")
+        if check_player_win(board,player):
+            print(f"Congratulations, the player {player} WON!")
+            sys.exit()
+        elif turn_counter >= max_turns:
+            print("It's a tie!")
+            sys.exit()
