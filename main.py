@@ -28,6 +28,7 @@ board = [
 ]
 
 max_turns = board[0].count(' ') ** 2
+h_line = 40 * '='
 
 def get_move(player: str) -> int:
     """Prompt player for move input and validate it.
@@ -98,28 +99,32 @@ def update_board(board: list, player: str, move: int) -> list:
         board[(move - 1) // 3][(move - 1) % 3] = player
         return board
     else:
-        print("The field is already taken")
+        print("The field is already taken, try again.")
     
 
 winner = None
 turn_counter = 0
-
+# WELCOME
+print(welcome_text)
+print(40 * "-")
 draw_board(board)
+
+# GAME LOOP
 while True:
     for player in VALID_PLAYERS:
         turn_counter += 1
-        while turn_counter <= max_turns:
-            print(f"turn number {turn_counter}")
+        while turn_counter <= max_turns: # Skipping round if all fields are filled
+            print(h_line)
             move = get_move(player)
-            if update_board(board,player,move) is None:
+            if update_board(board,player,move) is None: # Keep asking user for input if not valid
                 continue
             else:
                 break
-
+        print(h_line)
         draw_board(board)
         if check_player_win(board,player):
             print(f"Congratulations, the player {player} WON!")
             sys.exit()
-        elif turn_counter >= max_turns:
+        elif turn_counter >= max_turns: # All fields are filled
             print("It's a tie!")
             sys.exit()
